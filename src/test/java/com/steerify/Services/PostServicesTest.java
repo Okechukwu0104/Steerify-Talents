@@ -63,7 +63,17 @@ public class PostServicesTest {
 
     @Test
     void getPostById_ShouldReturnPost() {
-        PostDto result = postService.getPostById(post.getPostId());
+        Post newPost = new Post(
+                UUID.randomUUID(),
+                "Uncle Rakpata",
+                "Web Developer",
+                "7 years experience in HTML",
+                "#1M/hour",
+                "897789787"
+        );
+        UUID identity = postRepository.save(newPost).getPostId();
+
+        PostDto result = postService.getPostById(identity);
 
         assertNotNull(result);
         assertEquals(post.getTitle(), result.getTitle());
@@ -77,21 +87,33 @@ public class PostServicesTest {
 
     @Test
     void updatePost_ShouldReturnUpdatedPost() {
+        Post oldPost = new Post(
+                UUID.randomUUID(),
+                "Okechukwu Peter",
+                "Junior Web Developer",
+                "Experienced in HTML,CSS and JavaScript. " +
+                        "I can fully develop your full stack applications ",
+                "$10/hour",
+                "13245678"
+        );
+        UUID identity = oldPost.getPostId();
+        postRepository.save(oldPost);
+
         PostDto updatedPostDto = new PostDto(
                 post.getPostId(),
                 "Okechukwu Peter",
                 "Senior Web Developer",
-                "Experienced in Spring Boot, React, and AWS. " +
+                "Experienced in Spring Boot,Flask,Django, React,C++ and AWS. " +
                         "I can fully develop your full stack applications ",
-                "$70/hour",
-                "13245678"
+                "$1000/hour",
+                "Check your mail"
         );
 
-        PostDto result = postService.updatePost(post.getPostId(), updatedPostDto);
+        PostDto result = postService.updatePost(oldPost.getPostId(), updatedPostDto);
         assertNotNull(result);
         assertEquals(updatedPostDto.getTitle(), result.getTitle());
 
-        Post updatedPost = postRepository.findById(post.getPostId()).orElse(null);
+        Post updatedPost = postRepository.findById(identity).orElse(null);
         assertNotNull(updatedPost);
         assertEquals(updatedPostDto.getTitle(), updatedPost.getTitle());
     }
