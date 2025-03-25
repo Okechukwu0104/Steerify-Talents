@@ -31,12 +31,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Admin admin = adminRepository.findByAdminEmail(email).orElse(null);
+        Admin admin = adminRepository.findByEmail(email).orElse(null);
         if (admin != null) {
             return createUserDetails(admin);
         }
 
-        Talent talent = talentRepository.findByEmailAddress(email).orElse(null);
+        Talent talent = talentRepository.findByEmail(email).orElse(null);
         if (talent != null) {
             return createUserDetails(talent);
         }

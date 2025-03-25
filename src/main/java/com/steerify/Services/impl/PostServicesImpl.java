@@ -5,6 +5,7 @@ import com.steerify.Dtos.Reusables.PostDto;
 import com.steerify.Entities.Reusables.Post;
 import com.steerify.Mappers.Reusables.PostMapper;
 import com.steerify.Repositories.Reusables.PostRepository;
+import com.steerify.Repositories.TalentRepository;
 import com.steerify.Services.PostServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class PostServicesImpl implements PostServices {
 
     private final PostRepository postRepository;
+    private final TalentRepository talentRepository;
 
     public PostDto createPost(PostDto postDto) {
         Post post = PostMapper.mapDtoToPost(postDto);
@@ -60,4 +62,5 @@ public class PostServicesImpl implements PostServices {
     public void deletePost(UUID postId) {
         postRepository.deleteById(postId);
     }
+
 }

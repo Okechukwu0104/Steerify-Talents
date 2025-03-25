@@ -12,7 +12,4 @@ public interface PostServices {
     PostDto updatePost(UUID postId, PostDto postDto);
     PostDto findPostByTalentName(String name);
     void deletePost(UUID postId);
-
-
-
-    }
+}

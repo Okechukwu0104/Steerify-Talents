@@ -2,6 +2,7 @@ package com.steerify.Controllers;
 
 import com.steerify.Dtos.Reusables.PostDto;
 import com.steerify.Repositories.TalentRepository;
+import com.steerify.Services.PostServices;
 import com.steerify.Services.impl.PostServicesImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostController {
 
-    private final PostServicesImpl postService;
+    private final PostServices postService;
     private final TalentRepository talentRepository;
 
     @PostMapping
@@ -36,19 +37,19 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable UUID postId) {
+    public ResponseEntity<PostDto> getPostById(@PathVariable("postId") UUID postId) {
         PostDto post = postService.getPostById(postId);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable UUID postId, @Valid @RequestBody PostDto postDto) {
+    public ResponseEntity<PostDto> updatePost(@PathVariable("postId") UUID postId, @Valid @RequestBody PostDto postDto) {
         PostDto updatedPost = postService.updatePost(postId, postDto);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
+    public ResponseEntity<Void> deletePost(@PathVariable("postId") UUID postId) {
         postService.deletePost(postId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

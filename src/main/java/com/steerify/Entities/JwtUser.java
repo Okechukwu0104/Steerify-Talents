@@ -12,4 +12,6 @@ public interface JwtUser {
     String getLastName();
     Role getRole();
     String getPassword();
+    String getUserType();
+
 }

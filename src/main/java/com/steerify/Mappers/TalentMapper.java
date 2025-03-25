@@ -2,6 +2,9 @@ package com.steerify.Mappers;
 
 import com.steerify.Dtos.TalentDto;
 import com.steerify.Entities.Talent;
+import com.steerify.Enums.Role;
+
+import java.util.UUID;
 
 public class TalentMapper {
      public static TalentDto mapTalentToDto(Talent talent) {
@@ -9,7 +12,9 @@ public class TalentMapper {
                  talent.getTalentId(),
                  talent.getFirstName(),
                  talent.getLastName(),
-                 talent.getEmailAddress(),
+                 talent.getAge(),
+                 talent.getGender(),
+                 talent.getEmail(),
                  talent.getPhoneNumber(),
                  talent.getAddress(),
                  talent.getSkills(),
@@ -22,18 +27,19 @@ public class TalentMapper {
 
      public static Talent mapDtoToTalent(TalentDto talentDto) {
          return new Talent(
-                 talentDto.getTalentId(),
+                 talentDto.getTalentId() != null ? talentDto.getTalentId() : UUID.randomUUID(),
                  talentDto.getFirstName(),
                  talentDto.getLastName(),
                  talentDto.getAge(),
                  talentDto.getGender(),
-                 talentDto.getEmailAddress(),
+                 talentDto.getEmail(),
                  talentDto.getPhoneNumber(),
                  talentDto.getAddress(),
                  talentDto.getSkills(),
                  talentDto.getEducation(),
                  talentDto.getAvailability(),
-                 talentDto.getPassword()
+                 talentDto.getPassword(),
+                 Role.TALENT
 
          );
      }

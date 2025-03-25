@@ -2,11 +2,14 @@ package com.steerify.Mappers;
 
 import com.steerify.Dtos.ClientDto;
 import com.steerify.Entities.Client;
+import com.steerify.Enums.Role;
+
+import java.util.UUID;
 
 public class ClientMapper {
-    public static Client mapToClient(ClientDto clientDto){
+    public static Client mapToClient(ClientDto clientDto) {
         return new Client(
-                clientDto.getClientId(),
+                clientDto.getClientId() != null ? clientDto.getClientId() : UUID.randomUUID(),
                 clientDto.getCompanyName(),
                 clientDto.getFirstName(),
                 clientDto.getLastName(),
@@ -28,8 +31,9 @@ public class ClientMapper {
                 client.getEmail(),
                 client.getDescription(),
                 client.getContactPerson(),
-                client.getPhone(),
-                client.getRole()
+                client.getPhone()
         );
     }
+
+
 }

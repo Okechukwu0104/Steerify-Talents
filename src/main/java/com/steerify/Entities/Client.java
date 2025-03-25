@@ -49,4 +49,9 @@ public class Client implements JwtUser {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public String getUserType() {
+        return "CLIENT";
+    }
 }

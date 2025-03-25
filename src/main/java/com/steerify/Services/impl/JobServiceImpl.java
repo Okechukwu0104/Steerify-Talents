@@ -1,6 +1,4 @@
 package com.steerify.Services.impl;
-
-
 import com.steerify.Dtos.Reusables.JobDto;
 import com.steerify.Entities.Reusables.Job;
 import com.steerify.Mappers.Reusables.JobMapper;

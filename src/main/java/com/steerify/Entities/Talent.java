@@ -23,7 +23,7 @@ public class Talent implements JwtUser{
     private String lastName;
     private int age;
     private String gender;
-    private String emailAddress;
+    private String email;
     private String phoneNumber;
     private String address;
     private List<String> Skills;
@@ -34,12 +34,12 @@ public class Talent implements JwtUser{
 
 
 
-    public Talent(UUID talentId, String firstName, String lastName, int age, String gender, String emailAddress, String phoneNumber, String address, List<String> skills, String education, TalentEnum availability, String password) {
-    }
+
+
 
     @Override
     public String getEmail() {
-        return emailAddress;
+        return email;
     }
 
     @Override
@@ -56,5 +56,10 @@ public class Talent implements JwtUser{
     @Override
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUserType() {
+        return "TALENT";
     }
 }

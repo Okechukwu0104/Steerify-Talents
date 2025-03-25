@@ -10,22 +10,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateEntityException.class)
-    public static ResponseEntity<ErrorResponse> handleDuplicateEntityException(DuplicateEntityException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    public static ResponseEntity<ErrorResponse> handleDuplicateEntityException(DuplicateEntityException message) {
+        ErrorResponse errorResponse = new ErrorResponse(message.getMessage(), HttpStatus.CONFLICT.value());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(JobNotFoundException.class)
-    public static ResponseEntity<ErrorResponse> handleJobNotFoundException(JobNotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    public static ResponseEntity<ErrorResponse> handleJobNotFoundException(JobNotFoundException errpr) {
+        ErrorResponse errorResponse = new ErrorResponse(errpr.getMessage(), HttpStatus.CONFLICT.value());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public static ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("An error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+    public static ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException error) {
+        ErrorResponse errorResponse = new ErrorResponse("An error occurred: " + error.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
 
 
 }

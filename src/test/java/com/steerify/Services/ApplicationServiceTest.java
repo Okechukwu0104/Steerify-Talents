@@ -1,171 +1,170 @@
 package com.steerify.Services;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-
 import com.steerify.Dtos.Reusables.ApplicationDto;
 import com.steerify.Entities.Reusables.Application;
 import com.steerify.Enums.ApplicationStatus;
 import com.steerify.Repositories.Reusables.ApplicationRepository;
+import com.steerify.Services.impl.ApplicationServiceImpl;
+import com.steerify.exceptions.ResourceNotFoundException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 @DataMongoTest
+@Import(ApplicationServiceImpl.class)
 class ApplicationServiceTest {
-    private ApplicationService applicationService;
 
+    @Autowired
     private ApplicationRepository applicationRepository;
 
+    @Autowired
+    private ApplicationServiceImpl applicationService;
 
+    private Application testApplication;
 
-    @Test
-    void testCreateApplication() {
-        ApplicationDto dto = new ApplicationDto(
-                null,
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "I'm excited to apply for this position",
-                null
-        );
+    @BeforeEach
+    void setUp() {
+        testApplication = new Application();
+        testApplication.setApplicationId(UUID.randomUUID());
+        testApplication.setTalentId(UUID.randomUUID());
+        testApplication.setJobId(UUID.randomUUID());
+        testApplication.setCoverLetter("Experienced developer looking for new opportunities");
+        testApplication.setStats(ApplicationStatus.PENDING);
+        applicationRepository.save(testApplication);
+    }
 
-        Application created = applicationService.createApplication(dto);
-
-        assertNotNull(created.getApplicationId());
-        assertEquals(dto.getTalentId(), created.getTalentId());
-        assertEquals(dto.getJobId(), created.getJobId());
-        assertEquals(dto.getCoverLetter(), created.getCoverLetter());
-        assertEquals(ApplicationStatus.PENDING, created.getStats());
-        assertTrue(applicationRepository.findById(created.getApplicationId()).isPresent());
+    @AfterEach
+    void tearDown() {
+        applicationRepository.deleteAll();
     }
 
     @Test
-    void testGetApplicationById() {
-        Application savedApp = applicationRepository.save(new Application(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "Test cover letter",
-                ApplicationStatus.PENDING
-        ));
+    void createApplication_ShouldSaveAndReturnApplicationDto() {
+        ApplicationDto dto = new ApplicationDto();
+        dto.setTalentId(UUID.randomUUID());
+        dto.setJobId(UUID.randomUUID());
+        dto.setCoverLetter("New application cover letter");
 
-        Application found = applicationService.getApplicationById(savedApp.getApplicationId());
+        ApplicationDto result = applicationService.createApplication(dto);
 
-        assertEquals(savedApp.getApplicationId(), found.getApplicationId());
-        assertEquals(savedApp.getCoverLetter(), found.getCoverLetter());
+        assertNotNull(result.getApplicationId());
+        assertEquals(dto.getCoverLetter(), result.getCoverLetter());
+        assertEquals(ApplicationStatus.PENDING, result.getStats());
+        assertTrue(applicationRepository.existsById(result.getApplicationId()));
     }
 
     @Test
-    void testGetApplicationById_NotFound() {
+    void getApplicationById_ShouldReturnApplication_WhenExists() {
+        ApplicationDto result = applicationService.getApplicationById(testApplication.getApplicationId());
+
+        assertNotNull(result);
+        assertEquals(testApplication.getApplicationId(), result.getApplicationId());
+        assertEquals(testApplication.getCoverLetter(), result.getCoverLetter());
+    }
+
+    @Test
+    void getApplicationById_ShouldThrowException_WhenNotFound() {
         UUID nonExistentId = UUID.randomUUID();
-        assertThrows(RuntimeException.class, () -> {
-            applicationService.getApplicationById(nonExistentId);
-        });
+        assertThrows(ResourceNotFoundException.class,
+                () -> applicationService.getApplicationById(nonExistentId));
     }
 
     @Test
-    void testGetApplicationsByTalentId() {
+    void getApplicationsByTalentId_ShouldReturnMatchingApplications() {
         UUID talentId = UUID.randomUUID();
-        applicationRepository.saveAll(List.of(
-                new Application(UUID.randomUUID(), talentId, UUID.randomUUID(), "App 1", ApplicationStatus.PENDING),
-                new Application(UUID.randomUUID(), talentId, UUID.randomUUID(), "App 2", ApplicationStatus.REVIEWED),
-                new Application(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "Other talent", ApplicationStatus.PENDING)
-        ));
+        Application app1 = createTestApplication(talentId, UUID.randomUUID());
+        Application app2 = createTestApplication(talentId, UUID.randomUUID());
+        createTestApplication(UUID.randomUUID(), UUID.randomUUID());
 
-        List<Application> applications = applicationService.getApplicationsByTalentId(talentId);
-
-        assertEquals(2, applications.size());
-        assertTrue(applications.stream().allMatch(app -> app.getTalentId().equals(talentId)));
-    }
-
-    @Test
-    void testGetApplicationsByJobId() {
-        UUID jobId = UUID.randomUUID();
-        applicationRepository.saveAll(List.of(
-                new Application(UUID.randomUUID(), UUID.randomUUID(), jobId, "App 1", ApplicationStatus.PENDING),
-                new Application(UUID.randomUUID(), UUID.randomUUID(), jobId, "App 2", ApplicationStatus.ACCEPTED),
-                new Application(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "Other job", ApplicationStatus.PENDING)
-        ));
-
-        List<Application> applications = applicationService.getApplicationsByJobId(jobId);
-
-        assertEquals(2, applications.size());
-        assertTrue(applications.stream().allMatch(app -> app.getJobId().equals(jobId)));
-    }
-
-    @Test
-    void testGetApplicationsByCoverLetterContent() {
-        applicationRepository.saveAll(List.of(
-                new Application(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                        "I'm passionate about software development", ApplicationStatus.PENDING),
-                new Application(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                        "Passionate developer with 5 years experience", ApplicationStatus.REVIEWED),
-                new Application(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                        "Looking for new opportunities", ApplicationStatus.PENDING)
-        ));
-
-        List<Application> results = applicationService.getApplicationsByCoverLetterContent("passionate");
+        List<ApplicationDto> results = applicationService.getApplicationsByTalentId(talentId);
 
         assertEquals(2, results.size());
+        assertTrue(results.stream().allMatch(dto -> dto.getTalentId().equals(talentId)));
+    }
+
+    @Test
+    void getApplicationsByJobId_ShouldReturnMatchingApplications() {
+        UUID jobId = UUID.randomUUID();
+        Application app1 = createTestApplication(UUID.randomUUID(), jobId);
+        Application app2 = createTestApplication(UUID.randomUUID(), jobId);
+        createTestApplication(UUID.randomUUID(), UUID.randomUUID());
+
+        List<ApplicationDto> results = applicationService.getApplicationsByJobId(jobId);
+
+        assertEquals(2, results.size());
+        assertTrue(results.stream().allMatch(dto -> dto.getJobId().equals(jobId)));
+    }
+
+    @Test
+    void getApplicationsByCoverLetterContent_ShouldReturnMatchingApplications() {
+        String searchTerm = "experienced";
+        Application app1 = createTestApplicationWithCoverLetter("I'm an experienced Python developer");
+        Application app2 = createTestApplicationWithCoverLetter("Experienced in Spring Boot");
+        createTestApplicationWithCoverLetter("Looking for second opportunity");
+
+        List<ApplicationDto> results = applicationService.getApplicationsByCoverLetterContent(searchTerm);
+
         assertTrue(results.stream()
-                .allMatch(app -> app.getCoverLetter().toLowerCase().contains("passionate")));
+                .allMatch(dto -> dto.getCoverLetter().toLowerCase().contains(searchTerm)));
     }
 
     @Test
-    void testGetApplicationsByCoverLetterContent_EmptySearch() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            applicationService.getApplicationsByCoverLetterContent("");
-        });
+    void getApplicationsByCoverLetterContent_ShouldThrowException_WhenSearchTermEmpty() {
+        assertThrows(IllegalArgumentException.class,
+                () -> applicationService.getApplicationsByCoverLetterContent(""));
     }
 
     @Test
-    void testUpdateApplicationStatus() {
-        Application app = applicationRepository.save(new Application(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "Test application",
-                ApplicationStatus.PENDING
-        ));
+    void updateApplicationStatus_ShouldUpdateAndReturnApplication() {
+        ApplicationStatus newStatus = ApplicationStatus.ACCEPTED;
 
-        Application updated = applicationService.updateApplicationStatus(
-                app.getApplicationId(),
-                ApplicationStatus.ACCEPTED
-        );
+        ApplicationDto result = applicationService.updateApplicationStatus(
+                testApplication.getApplicationId(), newStatus);
 
-        assertEquals(ApplicationStatus.ACCEPTED, updated.getStats());
-        assertEquals(app.getApplicationId(), updated.getApplicationId());
-
-        Application dbApp = applicationRepository.findById(app.getApplicationId()).get();
-        assertEquals(ApplicationStatus.ACCEPTED, dbApp.getStats());
+        assertEquals(newStatus, result.getStats());
+        assertEquals(newStatus,
+                applicationRepository.findById(testApplication.getApplicationId()).get().getStats());
     }
 
     @Test
-    void testUpdateApplicationStatus_NotFound() {
+    void deleteApplication_ShouldRemoveApplication() {
+        applicationService.deleteApplication(testApplication.getApplicationId());
+
+        assertFalse(applicationRepository.existsById(testApplication.getApplicationId()));
+    }
+
+    @Test
+    void deleteApplication_ShouldThrowException_WhenNotFound() {
         UUID nonExistentId = UUID.randomUUID();
-        assertThrows(RuntimeException.class, () -> {
-            applicationService.updateApplicationStatus(nonExistentId, ApplicationStatus.ACCEPTED);
-        });
+        assertThrows(ResourceNotFoundException.class,
+                () -> applicationService.deleteApplication(nonExistentId));
     }
 
-    @Test
-    void testDeleteApplication() {
-        Application app = applicationRepository.save(new Application(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "To be deleted now now",
-                ApplicationStatus.PENDING
-        ));
+    private Application createTestApplication(UUID talentId, UUID jobId) {
+        Application app = new Application();
+        app.setApplicationId(UUID.randomUUID());
+        app.setTalentId(talentId);
+        app.setJobId(jobId);
+        app.setCoverLetter("Test application");
+        app.setStats(ApplicationStatus.PENDING);
+        return applicationRepository.save(app);
+    }
 
-        applicationService.deleteApplication(app.getApplicationId());
-
-        assertFalse(applicationRepository.existsById(app.getApplicationId()));
+    private Application createTestApplicationWithCoverLetter(String coverLetter) {
+        Application app = new Application();
+        app.setApplicationId(UUID.randomUUID());
+        app.setTalentId(UUID.randomUUID());
+        app.setJobId(UUID.randomUUID());
+        app.setCoverLetter(coverLetter);
+        app.setStats(ApplicationStatus.PENDING);
+        return applicationRepository.save(app);
     }
 }

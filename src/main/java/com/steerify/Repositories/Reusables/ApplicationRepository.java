@@ -1,4 +1,5 @@
 package com.steerify.Repositories.Reusables;
+import com.steerify.Dtos.Reusables.ApplicationDto;
 import com.steerify.Entities.Reusables.Application;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

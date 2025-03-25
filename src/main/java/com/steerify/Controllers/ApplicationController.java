@@ -19,30 +19,29 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @PostMapping
-    public ResponseEntity<Application> createApplication(@RequestBody ApplicationDto applicationDto) {
-        Application application = applicationService.createApplication(applicationDto);
+    public ResponseEntity<ApplicationDto> createApplication(@RequestBody ApplicationDto applicationDto) {
+        ApplicationDto application = applicationService.createApplication(applicationDto);
         return ResponseEntity.ok(application);
     }
 
     @GetMapping("/{applicationId}")
-    public ResponseEntity<Application> getApplicationById(@PathVariable UUID applicationId) {
-        Application application = applicationService.getApplicationById(applicationId);
+    public ResponseEntity<ApplicationDto> getApplicationById(@PathVariable UUID applicationId) {
+        ApplicationDto application = applicationService.getApplicationById(applicationId);
         return ResponseEntity.ok(application);
     }
 
     @GetMapping("/talent/{talentId}")
-    public ResponseEntity<List<Application>> getApplicationsByTalentId(@PathVariable UUID talentId) {
-        List<Application> applications = applicationService.getApplicationsByTalentId(talentId);
+    public ResponseEntity<List<ApplicationDto>> getApplicationsByTalentId(@PathVariable UUID talentId) {
+        List<ApplicationDto> applications = applicationService.getApplicationsByTalentId(talentId);
         return ResponseEntity.ok(applications);
     }
 
 
-
     @PutMapping("/{applicationId}/status")
-    public ResponseEntity<Application> updateApplicationStatus(
+    public ResponseEntity<ApplicationDto> updateApplicationStatus(
             @PathVariable UUID applicationId,
             @RequestParam ApplicationStatus status) {
-        Application application = applicationService.updateApplicationStatus(applicationId, status);
+        ApplicationDto application = applicationService.updateApplicationStatus(applicationId, status);
         return ResponseEntity.ok(application);
     }
 
@@ -51,10 +50,11 @@ public class ApplicationController {
         applicationService.deleteApplication(applicationId);
         return ResponseEntity.ok("deleted successfully");
     }
+
     @GetMapping("/search")
-    public ResponseEntity<List<Application>> searchApplicationsByCoverLetter(
+    public ResponseEntity<List<ApplicationDto>> searchApplicationsByCoverLetter(
             @RequestParam String keyword) {
-        List<Application> applications = applicationService.getApplicationsByCoverLetterContent(keyword);
+        List<ApplicationDto> applications = applicationService.getApplicationsByCoverLetterContent(keyword);
         return ResponseEntity.ok(applications);
     }
 }
