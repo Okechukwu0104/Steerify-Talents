@@ -14,4 +14,5 @@ public interface ApplicationRepository extends MongoRepository<Application, UUID
     List<Application> findByJobId(UUID jobId);
     @Query("{ 'coverLetter' : { $regex: ?0, $options: 'i' } }")
     List<Application> findByCoverLetterContaining(String searchTerm);
+    boolean existsByTalentIdAndJobId(UUID talentId, UUID jobId);
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,5 +27,5 @@ public class Job {
     private List<String> requiredSkills;
     private String location;
     private String payment;
-    private String deadline;
+    private LocalDate deadline;
 }

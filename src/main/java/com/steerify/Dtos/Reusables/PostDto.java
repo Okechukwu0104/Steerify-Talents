@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PostDto {
     private UUID postId;
-    @NotBlank(message = "Name is required")
+    private UUID userId;
     private String name;
 
     @NotBlank(message = "Title is required")
@@ -24,5 +24,6 @@ public class PostDto {
     private String price;
 
     private String phoneNumber;
+    private String role;
 
 }

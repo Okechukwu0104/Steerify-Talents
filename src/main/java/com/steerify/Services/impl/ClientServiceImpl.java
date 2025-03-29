@@ -40,7 +40,6 @@ public class ClientServiceImpl implements ClientService {
             Client client = ClientMapper.mapToClient(clientDto);
             client.setRole(Role.CLIENT);
             client.setPassword(passwordEncoder.encode(clientDto.getPassword()));
-            client.setClientId(UUID.randomUUID());
             Client savedClient = clientRepository.save(client);
             jwtUserRepository.save(savedClient);
             return ClientMapper.mapToCLientDto(savedClient);

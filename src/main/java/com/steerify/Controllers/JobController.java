@@ -22,28 +22,9 @@ public class JobController {
     private final ApplicationService applicationService;
 
     @PostMapping
-    public ResponseEntity<Job> createJob(@RequestBody JobDto jobDto) {
-        Job job = jobService.createJob(jobDto);
-        return ResponseEntity.ok(job);
-    }
 
-    @GetMapping
-    public ResponseEntity<List<Job>> getAllJobs() {
-        List<Job> jobs = jobService.getAllJobs();
-        return ResponseEntity.ok(jobs);
-    }
 
-    @GetMapping("/{jobId}")
-    public ResponseEntity<Job> getJobById(@PathVariable UUID jobId) {
-        Job job = jobService.getJobById(jobId);
-        return ResponseEntity.ok(job);
-    }
 
-    @GetMapping("/client/{clientId}")
-    public ResponseEntity<List<Job>> getJobsByClientId(@PathVariable UUID clientId) {
-        List<Job> jobs = jobService.getJobsByClientId(clientId);
-        return ResponseEntity.ok(jobs);
-    }
 
     @PutMapping("/{jobId}")
     public ResponseEntity<Job> updateJob(@PathVariable UUID jobId, @RequestBody JobDto jobDto) {

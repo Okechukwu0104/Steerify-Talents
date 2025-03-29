@@ -7,6 +7,7 @@ import com.steerify.Entities.Talent;
 import com.steerify.Repositories.AdminRepository;
 import com.steerify.Repositories.ClientRepository;
 import com.steerify.Repositories.TalentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,46 +15,25 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final AdminRepository adminRepository;
     private final TalentRepository talentRepository;
     private final ClientRepository clientRepository;
 
-    public CustomUserDetailsService(
-            AdminRepository adminRepository,
-            TalentRepository talentRepository,
-            ClientRepository clientRepository) {
-        this.adminRepository = adminRepository;
-        this.talentRepository = talentRepository;
-        this.clientRepository = clientRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Admin admin = adminRepository.findByEmail(email).orElse(null);
-        if (admin != null) {
-            return createUserDetails(admin);
-        }
+        if (admin != null) return admin;
 
         Talent talent = talentRepository.findByEmail(email).orElse(null);
-        if (talent != null) {
-            return createUserDetails(talent);
-        }
+        if (talent != null) return talent;
 
         Client client = clientRepository.findByEmail(email).orElse(null);
-        if (client != null) {
-            return createUserDetails(client);
-        }
+        if (client != null) return client;
 
         throw new UsernameNotFoundException("User not found with email: " + email);
-    }
-
-    private UserDetails createUserDetails(JwtUser user) {
-        return User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .roles(user.getRole().name())
-                .build();
     }
 }

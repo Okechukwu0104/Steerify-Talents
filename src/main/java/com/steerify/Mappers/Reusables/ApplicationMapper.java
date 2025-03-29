@@ -2,6 +2,9 @@ package com.steerify.Mappers.Reusables;
 
 import com.steerify.Dtos.Reusables.ApplicationDto;
 import com.steerify.Entities.Reusables.Application;
+import com.steerify.Enums.ApplicationStatus;
+
+import java.util.UUID;
 
 public class ApplicationMapper {
 
@@ -17,7 +20,7 @@ public class ApplicationMapper {
 
     public static Application mapToAppl(ApplicationDto applicationDto){
         return new Application(
-                applicationDto.getApplicationId(),
+                applicationDto.getApplicationId() != null ? applicationDto.getApplicationId() : UUID.randomUUID(),
                 applicationDto.getTalentId(),
                 applicationDto.getJobId(),
                 applicationDto.getCoverLetter(),

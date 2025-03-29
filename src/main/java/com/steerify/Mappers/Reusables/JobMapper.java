@@ -1,8 +1,6 @@
 package com.steerify.Mappers.Reusables;
-
 import com.steerify.Entities.Reusables.Job;
 import com.steerify.Dtos.Reusables.JobDto;
-
 import java.util.UUID;
 
 public class JobMapper {
@@ -23,7 +21,7 @@ public class JobMapper {
 
     public static Job mapDtoToJob(JobDto jobDto) {
         return new Job(
-                UUID.randomUUID(),
+                jobDto.getJobId() != null ? jobDto.getJobId() : UUID.randomUUID(),
                 jobDto.getClientId(),
                 jobDto.getClientName(),
                 jobDto.getTitle(),

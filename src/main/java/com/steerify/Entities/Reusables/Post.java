@@ -17,10 +17,12 @@ public class Post {
     @Id
     private UUID postId;
 
+    private UUID userId;
     private String name;
     private String title;
     private String description;
     private String price;
     private String phoneNumber;
+    private String role;
 
 }

@@ -1,12 +1,15 @@
 package com.steerify.Dtos.Reusables;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,8 +36,12 @@ public class JobDto {
     @NotBlank(message = "Payment amount is required")
     private String payment;
 
-    @NotBlank(message = "Deadline is required")
-    private String deadline;
+    @NotNull(message = "Deadline is required")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate deadline;
+
+
+
 
 
 

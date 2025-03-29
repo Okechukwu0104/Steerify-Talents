@@ -2,12 +2,18 @@ package com.steerify.Controllers;
 
 import com.steerify.Dtos.ClientDto;
 import com.steerify.Dtos.Reusables.ApplicationDto;
+import com.steerify.Dtos.Reusables.JobDto;
 import com.steerify.Dtos.Reusables.PostDto;
 import com.steerify.Dtos.TalentDto;
+import com.steerify.Entities.Reusables.Job;
+import com.steerify.Entities.Talent;
 import com.steerify.Helpers.LoginRequestDto;
 import com.steerify.Helpers.LoginResponseDto;
 import com.steerify.Helpers.config.SecurityConfig;
 import com.steerify.Helpers.config.SecurityUtils;
+import com.steerify.Mappers.Reusables.JobMapper;
+import com.steerify.Repositories.Reusables.ApplicationRepository;
+import com.steerify.Repositories.Reusables.JobRepository;
 import com.steerify.Repositories.Reusables.PostRepository;
 import com.steerify.Repositories.TalentRepository;
 import com.steerify.Services.ApplicationService;
@@ -29,6 +35,7 @@ import java.util.UUID;
 
 import static com.steerify.Controllers.PostController.getCurrentUserName;
 
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/talents")
@@ -39,6 +46,8 @@ public class TalentsController {
     private final PostServices postService;
     private final SecurityUtils securityUtils;
     private final TalentRepository talentRepository;
+    private final JobRepository jobRepository;
+    private final ApplicationRepository applicationRepository;
 
     @PostMapping("/signup")
     @PreAuthorize("permitAll()")
@@ -62,52 +71,73 @@ public class TalentsController {
     }
 
 
-    @PostMapping("/applications")
+    @GetMapping("/jobs")
     @PreAuthorize("hasRole('TALENT')")
-    public ResponseEntity<ApplicationDto> createApplication(
-            @RequestBody ApplicationDto applicationDto) {
-        return ResponseEntity.ok(applicationService.createApplication(applicationDto));
+    public ResponseEntity<List<JobDto>> getAllAvailableJobs() {
+        return new ResponseEntity<>(jobService.getAllJobs()
+                .stream().map(JobMapper::mapJobToDto)
+                .toList(), HttpStatus.OK);
     }
 
-    @GetMapping("/applications")
+    @PostMapping("/apply/{jobId}")
     @PreAuthorize("hasRole('TALENT')")
-    public ResponseEntity<List<ApplicationDto>> getTalentApplications() {
-        UUID talentId = getCurrentTalentId();
+    public ResponseEntity<ApplicationDto> createApplication(
+            @PathVariable("jobId") UUID jobId,
+            @RequestBody ApplicationDto applicationDto) {
+        Job job =jobRepository.findById(jobId).orElseThrow(()-> new ResourceNotFoundException("Job not found"));
+        ApplicationDto application = applicationService.createApplication(applicationDto);
+        application.setJobId(job.getJobId());
+        return ResponseEntity.ok(application);
+    }
+
+    @GetMapping("/{talentId}/applications")
+    @PreAuthorize("hasRole('TALENT')")
+    public ResponseEntity<List<ApplicationDto>> getTalentApplications(
+            @PathVariable("talentId") UUID talentId
+    ) {
         return ResponseEntity.ok(applicationService.getApplicationsByTalentId(talentId));
     }
 
 
-    private UUID getCurrentTalentId() {
-        if (!securityUtils.getCurrentUserRole().equals("ROLE_TALENT")) {
-            throw new AccessDeniedException("Access denied");
-        }
-        String email = securityUtils.getCurrentUserEmail();
-        return talentRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Talent not found"))
-                .getTalentId();
+    @DeleteMapping("/{talentId}/{applicationId}")
+    @PreAuthorize("hasRole('TALENT')")
+    public ResponseEntity<String> deleteApplication(
+            @PathVariable("talentId") UUID talentId,
+            @PathVariable("applicationId") UUID applicationId) {
+
+        return new ResponseEntity<>(applicationService.deleteApplication(talentId,applicationId),HttpStatus.OK);
     }
 
-    @DeleteMapping("/applications/{applicationId}")
+    @PostMapping("{talentId}/post")
     @PreAuthorize("hasRole('TALENT')")
-    public ResponseEntity<Void> deleteApplication(
-            @PathVariable UUID applicationId) {
-        applicationService.deleteApplication(applicationId);
-        return ResponseEntity.noContent().build();
-    }
+    public ResponseEntity<PostDto> createPost(@PathVariable("talentId")UUID talentId,@Valid @RequestBody PostDto postDto) {
+        Talent foundTalent = talentRepository.findById(talentId).orElseThrow(()-> new ResourceNotFoundException("Talent not found"));
 
-    // Post Management
-    @PostMapping("/posts")
-    @PreAuthorize("hasRole('TALENT')")
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
-        postDto.setName(getCurrentUserName());
-        return ResponseEntity.ok(postService.createPost(postDto));
+        PostDto createdPost = postService.createPost(postDto, foundTalent.getFirstName(),
+                foundTalent.getLastName(),  foundTalent.getTalentId(), foundTalent.getPhoneNumber(),foundTalent.getRole());
+        return ResponseEntity.ok(createdPost);
     }
 
     @GetMapping("/posts")
-    @PreAuthorize("hasRole('TALENT')")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('TALENT')")
     public ResponseEntity<List<PostDto>> getTalentPosts() {
-        String username = getCurrentUserName();
         return ResponseEntity.ok(postService.getAllPosts());
     }
+
+
+
+    @PutMapping("/{postId}")
+    public ResponseEntity<PostDto> updatePost(@PathVariable("postId") UUID postId, @Valid @RequestBody PostDto postDto) {
+        PostDto updatedPost = postService.updatePost(postId, postDto);
+        return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deletePost(@PathVariable("postId") UUID postId) {
+        postService.deletePost(postId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
 
 }

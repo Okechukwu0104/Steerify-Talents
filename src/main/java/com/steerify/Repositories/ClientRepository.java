@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public interface ClientRepository extends MongoRepository<Client, UUID> {
     Optional<Client> findByEmail(String email);
-    List<Client> findByCompanyNameEqualsIgnoreCase(String nameOfCompany);
+    List<Client> findByCompanyNameContainingIgnoreCase(String nameOfCompany);
     boolean existsByEmail(String email);
 }

@@ -1,6 +1,7 @@
 package com.steerify.Helpers.config;
 
 import com.steerify.Repositories.JwtUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,13 +10,12 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class SecurityUtils {
 
     private final JwtUserRepository jwtUserRepository;
 
-    public SecurityUtils(JwtUserRepository jwtUserRepository) {
-        this.jwtUserRepository = jwtUserRepository;
-    }
+
 
 //    public UUID getCurrentUserId() {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

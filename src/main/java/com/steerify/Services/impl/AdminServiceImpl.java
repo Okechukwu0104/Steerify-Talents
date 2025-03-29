@@ -34,8 +34,6 @@ public class AdminServiceImpl implements AdminService {
         if( !adminRepository.existsByEmail(adminDto.getEmail()) ) {
             Admin admin = AdminMapper.mapToAdmin(adminDto);
             admin.setRole(Role.ADMIN);
-            admin.setPassword(passwordEncoder.encode(adminDto.getPassword()));
-            admin.setAdminId(UUID.randomUUID());
             Admin savedAdmin = adminRepository.save(admin);
             jwtUserRepository.save(savedAdmin);
             return AdminMapper.mapToAdminDto(savedAdmin);

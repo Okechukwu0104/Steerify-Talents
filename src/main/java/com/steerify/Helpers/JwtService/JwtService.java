@@ -8,5 +8,6 @@ public interface JwtService {
     LoginResponseDto generateToken(JwtUser loggedInUser) ;
     String extractUsername(String token) ;
     Boolean validateToken(String token, JwtUser user) ;
+    boolean isTokenValidStructure(String token);
 
 }

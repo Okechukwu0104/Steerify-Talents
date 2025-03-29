@@ -3,7 +3,6 @@ package com.steerify.Controllers;
 import com.steerify.Dtos.Reusables.PostDto;
 import com.steerify.Repositories.TalentRepository;
 import com.steerify.Services.PostServices;
-import com.steerify.Services.impl.PostServicesImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,12 +22,7 @@ public class PostController {
     private final PostServices postService;
     private final TalentRepository talentRepository;
 
-    @PostMapping
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
-        postDto.setName(getCurrentUserName());
-        PostDto createdPost = postService.createPost(postDto);
-        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
-    }
+
 
     @GetMapping
     public ResponseEntity<List<PostDto>> getAllPosts() {
@@ -42,17 +36,8 @@ public class PostController {
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
-    @PutMapping("/{postId}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable("postId") UUID postId, @Valid @RequestBody PostDto postDto) {
-        PostDto updatedPost = postService.updatePost(postId, postDto);
-        return new ResponseEntity<>(updatedPost, HttpStatus.OK);
-    }
 
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable("postId") UUID postId) {
-        postService.deletePost(postId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+
 
 
 

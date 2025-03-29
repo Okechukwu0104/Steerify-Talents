@@ -13,6 +13,7 @@ public interface ApplicationService {
     List<ApplicationDto> getApplicationsByJobId(UUID jobId) ;
     List<ApplicationDto> getApplicationsByCoverLetterContent(String searchTerm) ;
     ApplicationDto updateApplicationStatus(UUID applicationId, ApplicationStatus status);
-    void deleteApplication(UUID applicationId);
+    String deleteApplication(UUID talentId, UUID applicationId);
+
     List<ApplicationDto> getAllApplications();
 }

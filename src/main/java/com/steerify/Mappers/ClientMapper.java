@@ -31,7 +31,9 @@ public class ClientMapper {
                 client.getEmail(),
                 client.getDescription(),
                 client.getContactPerson(),
-                client.getPhone()
+                client.getPhone(),
+                null,
+                client.getRole()
         );
     }
 

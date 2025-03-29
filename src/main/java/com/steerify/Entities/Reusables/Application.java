@@ -1,6 +1,7 @@
 package com.steerify.Entities.Reusables;
 
 import com.steerify.Enums.ApplicationStatus;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,7 @@ public class Application {
     private UUID jobId;
     private String coverLetter;
     private ApplicationStatus stats;
+
+
+
 }
