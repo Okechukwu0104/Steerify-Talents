@@ -113,7 +113,6 @@ const PostsPage = () => {
                         </Button>
                     </div>
 
-                    {/* Search Section */}
                     <div className="p-4 space-y-4">
                         <div className="relative">
                             <Search
@@ -175,7 +174,6 @@ const PostsPage = () => {
 
                     </div>
 
-                    {/* User TalentSettingsPage */}
                     <div className="p-4 border-t flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                             <AvatarImage src={talent.avatar}/>
@@ -191,7 +189,6 @@ const PostsPage = () => {
                 </div>
 
                 <div className="flex-1 overflow-auto">
-                    {/* Main Content */}
                     <main className="flex-grow p-16 pt-32">
                         <div className="max-w-7xl mx-auto">
                             <div className="flex justify-between items-center mb-8">
@@ -267,7 +264,6 @@ const PostsPage = () => {
                                                     </div>
                                                 )}
 
-                                                {/* Comments Section */}
                                                 <div className="mt-6 border-t pt-4">
                                                     <Button
                                                         variant="ghost"
@@ -305,7 +301,6 @@ const PostsPage = () => {
                                                                 )}
                                                             </div>
 
-                                                            {/* Add Comment */}
                                                             <div className="flex gap-2">
                                                                 <Input
                                                                     placeholder="Add a comment..."

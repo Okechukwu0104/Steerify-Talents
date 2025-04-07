@@ -131,7 +131,6 @@ const TalentDashboard = () => {
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="flex-1 overflow-auto p-8 align-bottom">
                 <div className="max-w-4xl mx-auto">
 
@@ -144,10 +143,9 @@ const TalentDashboard = () => {
                         </p>
                     </div>
 
-                    {/* TalentDashboard Cards */}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Quick Stats Card */}
+
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <h3 className="font-medium mb-4">Your Profile Strength</h3>
                             <div className="h-2 bg-gray-200 rounded-full mb-2">
@@ -157,14 +155,12 @@ const TalentDashboard = () => {
                         </div>
                         {isTalent && (
                             <>
-                                {/* Recent Applications Card - for Talents */}
                                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                                     <h3 className="font-medium mb-4">Recent Applications</h3>
                                     <p className="text-gray-500 mb-2">Frontend Developer at TechCorp</p>
                                     <p className="text-gray-500">UI Designer at Creative Studio</p>
                                 </div>
 
-                                {/* Recommended Jobs Card - for Talents */}
                                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                                     <h3 className="font-medium mb-4">Job Offers for You</h3>
                                     <p className="text-gray-500 mb-2">Senior React Developer</p>
@@ -175,14 +171,12 @@ const TalentDashboard = () => {
 
                         {!isTalent && (
                         <>
-                            {/* Recent Applications Card - for Clients */}
                             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                                 <h3 className="font-medium mb-4">Recent offers</h3>
                                 <p className="text-gray-500 mb-2">Frontend Developer at TechCorp</p>
                                 <p className="text-gray-500">UI Designer at Creative Studio</p>
                             </div>
 
-                            {/* Recommended Jobs Card - for Clients */}
                             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                                 <h3 className="font-medium mb-4">Recommended Candidates</h3>
                                 <p className="text-gray-500 mb-2">Senior React Developer</p>
