@@ -14,6 +14,8 @@ public class ApplicationMapper {
                 application.getTalentId(),
                 application.getJobId(),
                 application.getCoverLetter(),
+                application.getCompanyName(),
+                application.getJobTitle(),
                 application.getStats()
         );
     }
@@ -24,6 +26,8 @@ public class ApplicationMapper {
                 applicationDto.getTalentId(),
                 applicationDto.getJobId(),
                 applicationDto.getCoverLetter(),
+                applicationDto.getJobTitle(),
+                applicationDto.getCompanyName(),
                 applicationDto.getStats()
         );
     }

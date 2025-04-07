@@ -24,6 +24,8 @@ public class Application {
     private UUID talentId;
     private UUID jobId;
     private String coverLetter;
+    private String companyName;
+    private String jobTitle;
     private ApplicationStatus stats;
 
 

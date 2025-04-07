@@ -13,9 +13,5 @@ export const store = configureStore({
     getDefaultMiddleware().concat(talentApiSlice.middleware),
 });
 
-// Enable listeners for automatic refetching
 setupListeners(store.dispatch);
 
-// Export types
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;

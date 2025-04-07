@@ -5,6 +5,7 @@ import com.steerify.Dtos.ClientDto;
 import com.steerify.Dtos.Reusables.ApplicationDto;
 import com.steerify.Dtos.Reusables.JobDto;
 import com.steerify.Dtos.Reusables.PostDto;
+import com.steerify.Dtos.TalentDto;
 import com.steerify.Entities.Client;
 import com.steerify.Entities.Reusables.Job;
 import com.steerify.Enums.ApplicationStatus;
@@ -12,13 +13,12 @@ import com.steerify.Helpers.LoginRequestDto;
 import com.steerify.Helpers.LoginResponseDto;
 import com.steerify.Helpers.auth.AuthService;
 import com.steerify.Repositories.ClientRepository;
-import com.steerify.Services.ApplicationService;
-import com.steerify.Services.ClientService;
-import com.steerify.Services.JobServices;
-import com.steerify.Services.PostServices;
+import com.steerify.Services.*;
+import com.steerify.Services.impl.TalentServicesImpl;
 import com.steerify.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +38,7 @@ public class ClientController {
     private final ApplicationService applicationService;
     private final PostServices postServices;
     private final ClientRepository clientRepository;
+    private final TalentServices talentServices;
 
 
     @PostMapping("/signup")
@@ -53,11 +54,7 @@ public class ClientController {
             return ResponseEntity.ok(clientService.login(loginDto));
         }
 
-        @GetMapping("/{clientId}")
-        @PreAuthorize("permitAll()")
-        public ResponseEntity<ClientDto> getClientById(@PathVariable UUID clientId) {
-            return ResponseEntity.ok(clientService.getClientById(clientId));
-        }
+
 
         @GetMapping
         @PreAuthorize("permitAll()")
@@ -65,7 +62,7 @@ public class ClientController {
             return ResponseEntity.ok(clientService.getAllClients());
         }
 
-        @PutMapping("/{clientId}")
+        @PutMapping("/update/{clientId}")
         @PreAuthorize("hasRole('CLIENT')")
         public ResponseEntity<ClientDto> updateClient(
                 @PathVariable UUID clientId,
@@ -87,11 +84,13 @@ public class ClientController {
         return ResponseEntity.ok(applications);
     }
 
-        @PostMapping("/jobs/create")
+//    update postman
+
+        @PostMapping("/{clientId}/jobs/create")
         @PreAuthorize("hasRole('CLIENT')")
-        public ResponseEntity<Job> createJob(@RequestBody JobDto jobDto) {
+        public ResponseEntity<Job> createJob(@PathVariable("clientId") UUID clientId ,@RequestBody JobDto jobDto) {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(jobService.createJob(jobDto));
+                    .body(jobService.createJob(clientId,jobDto));
         }
 
         @GetMapping("/{clientId}/jobs")
@@ -100,13 +99,7 @@ public class ClientController {
             return ResponseEntity.ok(jobService.getJobsByClientId(clientId));
         }
 
-        @PutMapping("/jobs/{jobId}")
-        @PreAuthorize("hasRole('CLIENT')")
-        public ResponseEntity<Job> updateClientJob(
-                @PathVariable UUID jobId,
-                @RequestBody JobDto jobDto) {
-            return ResponseEntity.ok(jobService.updateJob(jobId, jobDto));
-        }
+
 
         @GetMapping("/jobs/{jobId}/applications")
         @PreAuthorize("hasRole('CLIENT')")
@@ -116,7 +109,7 @@ public class ClientController {
         }
 
 
-        @PutMapping("/applications/{applicationId}/status")
+        @PutMapping("/application/{applicationId}/status")
         @PreAuthorize("hasRole('CLIENT')")
         public ResponseEntity<ApplicationDto> updateApplicationStatus(
                 @PathVariable("applicationId") UUID applicationId,
@@ -141,11 +134,41 @@ public class ClientController {
         return ResponseEntity.ok(postServices.getAllPosts());
     }
 
-//    @GetMapping("/talent/{talentId}")
-//    public ResponseEntity<List<ApplicationDto>> getApplicationsByTalentId(@PathVariable UUID talentId) {
-//        List<ApplicationDto> applications = applicationService.getApplicationsByTalentId(talentId);
-//        return ResponseEntity.ok(applications);
-//    }
+    @GetMapping("/{talentId}")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('TALENT')")
+    public ResponseEntity<List<ApplicationDto>> getApplicationsByTalentId(@PathVariable UUID talentId) {
+        List<ApplicationDto> applications = applicationService.getApplicationsByTalentId(talentId);
+        return ResponseEntity.ok(applications);
+    }
+
+    @GetMapping("/application/{jobId}")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('TALENT')")
+    public ResponseEntity<List<ApplicationDto>> getApplicationsByJobId(@PathVariable("jobId") UUID jobId) {
+        return ResponseEntity.ok(applicationService.getApplicationsByJobId(jobId));
+    }
+
+    @PutMapping("/jobs/{jobId}")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<Job> updateClientJob(
+            @PathVariable UUID jobId,
+            @RequestBody JobDto jobDto) {
+        return ResponseEntity.ok(jobService.updateJob(jobId, jobDto));
+    }
+
+
+
+    @DeleteMapping("/delete-job/{jobId}")
+    public ResponseEntity<String> deleteJob(@PathVariable UUID jobId) {
+        jobService.deleteJob(jobId);
+        return ResponseEntity.ok("job deleted successfully");
+    }
+
+
+    @GetMapping("/about-client/{clientId}")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<ClientDto> getClientById(@PathVariable UUID clientId) {
+        return ResponseEntity.ok(clientService.getClientById(clientId));
+    }
 
 }
 

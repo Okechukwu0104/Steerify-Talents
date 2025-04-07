@@ -22,7 +22,8 @@ public class ApplicationDto {
 
     @NotBlank(message = "Cover-Letter is required")
     private String coverLetter;
-
+    private String companyName;
+    private String jobTitle;
     private ApplicationStatus stats = ApplicationStatus.PENDING;
 
     public void setStatus(String status) {

@@ -9,6 +9,7 @@ import com.steerify.Entities.Reusables.Job;
 import com.steerify.Entities.Talent;
 import com.steerify.Helpers.LoginRequestDto;
 import com.steerify.Helpers.LoginResponseDto;
+import com.steerify.Helpers.auth.exception.UserNotFoundException;
 import com.steerify.Helpers.config.SecurityConfig;
 import com.steerify.Helpers.config.SecurityUtils;
 import com.steerify.Mappers.Reusables.JobMapper;
@@ -79,14 +80,20 @@ public class TalentsController {
                 .toList(), HttpStatus.OK);
     }
 
-    @PostMapping("/apply/{jobId}")
+//    update postman
+    @PostMapping("/{talentId}/apply/{jobId}")
     @PreAuthorize("hasRole('TALENT')")
     public ResponseEntity<ApplicationDto> createApplication(
+            @PathVariable("talentId") UUID talentId,
             @PathVariable("jobId") UUID jobId,
             @RequestBody ApplicationDto applicationDto) {
+        Talent talent = talentRepository.findById(talentId).orElseThrow(()-> new UserNotFoundException("User Not found"));
         Job job =jobRepository.findById(jobId).orElseThrow(()-> new ResourceNotFoundException("Job not found"));
+
+
         ApplicationDto application = applicationService.createApplication(applicationDto);
         application.setJobId(job.getJobId());
+        application.setTalentId(talent.getTalentId());
         return ResponseEntity.ok(application);
     }
 
@@ -94,9 +101,10 @@ public class TalentsController {
     @PreAuthorize("hasRole('TALENT')")
     public ResponseEntity<List<ApplicationDto>> getTalentApplications(
             @PathVariable("talentId") UUID talentId
-    ) {
+    ){
         return ResponseEntity.ok(applicationService.getApplicationsByTalentId(talentId));
     }
+
 
 
     @DeleteMapping("/{talentId}/{applicationId}")
@@ -139,5 +147,14 @@ public class TalentsController {
     }
 
 
+    @GetMapping("/about-talent/{talentId}")
+    public ResponseEntity<TalentDto> getTalentById(@PathVariable("talentId") UUID talentId) {
+        return new ResponseEntity<>(talentServices.findById(talentId), HttpStatus.FOUND);
+    }
 
+
+    @DeleteMapping("/{talentId}")
+    public ResponseEntity<Void> deleteTalent(@PathVariable("talentId") UUID talentId) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

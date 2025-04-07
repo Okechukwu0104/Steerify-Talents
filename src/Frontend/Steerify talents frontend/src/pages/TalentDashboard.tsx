@@ -9,9 +9,10 @@ import {
     User,
     Mail,
     Settings,
-    LogOut,
+    LogOut, Bookmark,
 } from "lucide-react";
-import {talentApiSlice} from "@/services/talentApiSlice.ts";
+import {talentApiSlice, useYourApplicationsQuery, useGetJobsQuery} from "@/services/talentApiSlice.ts";
+import React from "react";
 
 const TalentDashboard = () => {
     const location = useLocation();
@@ -22,28 +23,26 @@ const TalentDashboard = () => {
         lastName: "User",
         email: "guest@example.com",
     };
+    const isTalent = localStorage.getItem('userRole') === 'talent';
+
+    console.log(talent)
     const handleLogout = () => {
         // Clear Redux state
         dispatch(logout());
 
-        // Clear RTK Query cache
         dispatch(talentApiSlice.util.resetApiState());
 
-        // Clear local storage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
 
-        // Redirect and prevent going back
         navigate('/login', {replace: true});
     };
     return (
         <div className="flex h-screen bg-gray-50 pt-[8rem]">
-            {/* Sidebar/Navbar */}
             <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
                 <div className="p-5 border-b border-gray-200">
-                    <h1 className="text-xl font-semibold">{talent.role.toLowerCase()} Portal </h1>
+                    <h1 className="text-xl font-semibold">{talent.role.charAt(0).toUpperCase() + talent.role.slice(1).toLowerCase()} Portal </h1>
                 </div>
-
                 <div className="flex-2 pt-16 pl-3">
                     <div className="flex items-center gap-3 mb-3">
                         <Avatar>
@@ -70,7 +69,7 @@ const TalentDashboard = () => {
                         <Button
                             variant="ghost"
                             className="w-full justify-start gap-2"
-                            onClick={() => navigate("/talent-jobs")}
+                            onClick={() => navigate("/talent-jobs", {state: {talent: talent}})}
                         >
                             <Briefcase className="h-4 w-4"/>
                             Job Opportunities
@@ -86,19 +85,33 @@ const TalentDashboard = () => {
                             Recent Posts
                         </Button>
 
+                        {isTalent &&(
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start gap-2"
+                                onClick={() => navigate("/applications", {state: {talent: talent}})}
+                            >
+                                <Mail className="h-4 w-4"/>
+                                Your Job Applications
+                            </Button>
+                        )}
+
+                        {!isTalent &&(
+                            <Button
+                                className="w-full justify-start"
+                                variant="ghost"
+                                onClick={() => navigate('/my-offers', {state: {client: talent}})}
+                            >
+                                <Bookmark className="h-4 w-4 mr-2"/>
+                                My Job Offers
+                            </Button>
+                        )}
+
 
                         <Button
                             variant="ghost"
                             className="w-full justify-start gap-2"
-                            onClick={() => navigate("/talent-messages")}
-                        >
-                            <Mail className="h-4 w-4"/>
-                            Your Job Applications
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start gap-2"
-                            onClick={() => navigate("/talent-settings")}
+                            onClick={() => navigate("/settings",{state: {talent: talent}})}
                         >
                             <Settings className="h-4 w-4"/>
                             Settings
@@ -132,6 +145,7 @@ const TalentDashboard = () => {
                     </div>
 
                     {/* TalentDashboard Cards */}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Quick Stats Card */}
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -141,20 +155,43 @@ const TalentDashboard = () => {
                             </div>
                             <p className="text-sm text-gray-500">75% complete</p>
                         </div>
+                        {isTalent && (
+                            <>
+                                {/* Recent Applications Card - for Talents */}
+                                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                                    <h3 className="font-medium mb-4">Recent Applications</h3>
+                                    <p className="text-gray-500 mb-2">Frontend Developer at TechCorp</p>
+                                    <p className="text-gray-500">UI Designer at Creative Studio</p>
+                                </div>
 
-                        {/* Recent Applications Card */}
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                            <h3 className="font-medium mb-4">Recent Applications</h3>
-                            <p className="text-gray-500 mb-2">Frontend Developer at TechCorp</p>
-                            <p className="text-gray-500">UI Designer at Creative Studio</p>
-                        </div>
+                                {/* Recommended Jobs Card - for Talents */}
+                                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                                    <h3 className="font-medium mb-4">Job Offers for You</h3>
+                                    <p className="text-gray-500 mb-2">Senior React Developer</p>
+                                    <p className="text-gray-500">UX/UI Designer</p>
+                                </div>
+                            </>
+                        )}
 
-                        {/* Recommended Jobs Card */}
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                            <h3 className="font-medium mb-4">Recommended for You</h3>
-                            <p className="text-gray-500 mb-2">React Developer (Remote)</p>
-                            <p className="text-gray-500">UX Designer (Contract)</p>
-                        </div>
+                        {!isTalent && (
+                        <>
+                            {/* Recent Applications Card - for Clients */}
+                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                                <h3 className="font-medium mb-4">Recent offers</h3>
+                                <p className="text-gray-500 mb-2">Frontend Developer at TechCorp</p>
+                                <p className="text-gray-500">UI Designer at Creative Studio</p>
+                            </div>
+
+                            {/* Recommended Jobs Card - for Clients */}
+                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                                <h3 className="font-medium mb-4">Recommended Candidates</h3>
+                                <p className="text-gray-500 mb-2">Senior React Developer</p>
+                                <p className="text-gray-500">UX/UI Designer</p>
+                            </div>
+                        </>
+
+
+                            )}
                     </div>
                 </div>
             </div>
@@ -163,4 +200,4 @@ const TalentDashboard = () => {
 
 };
 // @ts-ignore
-export default TalentDashboard ;
+export default TalentDashboard;

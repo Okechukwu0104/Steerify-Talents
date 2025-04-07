@@ -35,7 +35,7 @@ class JobServicesTest {
         jobDto.setPayment("500k per annum");
         jobDto.setRequiredSkills(Arrays.asList("Java", "Spring"));
 
-        Job createdJob = jobServices.createJob(jobDto);
+        Job createdJob = jobServices.createJob(clientId, jobDto);
 
         assertNotNull(createdJob);
         assertEquals(jobDto.getTitle(), createdJob.getTitle());

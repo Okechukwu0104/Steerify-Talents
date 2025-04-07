@@ -31,7 +31,6 @@ const authSlice = createSlice({
     setCredentials: (state, action: PayloadAction<LoginResponseDto>) => {
       const { token, userId, name, email, role } = action.payload;
       
-      // Update state
       state.token = token;
       state.user.userId = userId;
       state.user.name = name;
@@ -39,7 +38,6 @@ const authSlice = createSlice({
       state.user.role = role;
       state.isAuthenticated = true;
       
-      // Update localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('userId', userId);
       localStorage.setItem('name', name);
@@ -47,7 +45,6 @@ const authSlice = createSlice({
       localStorage.setItem('role', role);
     },
     logout: (state) => {
-      // Clear state
       state.token = null;
       state.user = {
         userId: null,
@@ -57,7 +54,6 @@ const authSlice = createSlice({
       };
       state.isAuthenticated = false;
       
-      // Clear localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       localStorage.removeItem('name');

@@ -8,13 +8,13 @@ import { AlertCircle, Search, PlusCircle, List, MessageSquare, Send } from "luci
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, useState} from "react";
 
 const PostsPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { data: posts, isLoading, isError} = useGetTalentPostsQuery();
+    const {data: posts, isLoading, isError} = useGetTalentPostsQuery();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchQuery2, setSearchQuery2] = useState("");
     const [activeCommentPost, setActiveCommentPost] = useState<string | null>(null);
@@ -24,12 +24,15 @@ const PostsPage = () => {
         date: string;
     }>>>({});
     const [commentText, setCommentText] = useState("");
+    let index = 0;
+
 
     const talent = location.state?.talent || {
         firstName: "Guest",
         lastName: "User",
         email: "guest@example.com",
     };
+    const isTalent = talent.role === "talent" || localStorage.getItem("userRole") === "talent";
 
     // @ts-ignore
     const filteredPosts = posts?.filter(post =>
@@ -70,12 +73,12 @@ const PostsPage = () => {
                 {[...Array(3)].map((_, i) => (
                     <Card key={i} className="p-6">
                         <div className="space-y-3">
-                            <Skeleton className="h-6 w-3/4" />
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-5/6" />
+                            <Skeleton className="h-6 w-3/4"/>
+                            <Skeleton className="h-4 w-full"/>
+                            <Skeleton className="h-4 w-5/6"/>
                             <div className="flex gap-2 pt-2">
-                                <Skeleton className="h-4 w-20" />
-                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-20"/>
+                                <Skeleton className="h-4 w-20"/>
                             </div>
                         </div>
                     </Card>
@@ -88,7 +91,7 @@ const PostsPage = () => {
         return (
             <div className="p-16 pt-32">
                 <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="h-4 w-4"/>
                     <AlertTitle>Error loading posts</AlertTitle>
                 </Alert>
             </div>
@@ -99,7 +102,6 @@ const PostsPage = () => {
     return (
         <div className="min-h-screen flex flex-col">
             <div className="flex h-screen">
-                {/* Sidebar */}
                 <div className="w-64 bg-white shadow-sm border-r flex flex-col align-middle mt-32 ">
                     <div className="p-4 border-b">
                         <Button
@@ -138,16 +140,30 @@ const PostsPage = () => {
                         </div>
                     </div>
 
-                    {/* Navigation Links */}
                     <div className="flex-1 p-2 space-y-1">
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start gap-2"
-                            onClick={handleAddPost}
-                        >
-                            <PlusCircle className="h-4 w-4"/>
-                            Add Post
-                        </Button>
+                        {isTalent &&(
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start gap-2"
+                                onClick={handleAddPost}
+                            >
+                                <PlusCircle className="h-4 w-4"/>
+                                Create Post
+                            </Button>
+                        )}
+
+                        {!isTalent &&(
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start gap-2"
+                                onClick={handleAddPost}
+                            >
+                                <PlusCircle className="h-4 w-4"/>
+                                Create Post
+                            </Button>
+                        )}
+
+
                         <Button
                             variant="ghost"
                             className="w-full justify-start gap-2"
@@ -159,7 +175,7 @@ const PostsPage = () => {
 
                     </div>
 
-                    {/* User Profile */}
+                    {/* User TalentSettingsPage */}
                     <div className="p-4 border-t flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                             <AvatarImage src={talent.avatar}/>
@@ -174,7 +190,6 @@ const PostsPage = () => {
                     </div>
                 </div>
 
-                {/* Main Content */}
                 <div className="flex-1 overflow-auto">
                     {/* Main Content */}
                     <main className="flex-grow p-16 pt-32">
@@ -201,13 +216,13 @@ const PostsPage = () => {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {filteredPosts.map((post) => (
-                                        <Card key={post.id} className="hover:shadow-md transition-shadow">
+                                        <Card key={post.postId} className="hover:shadow-md transition-shadow">
                                             <div className="p-6">
                                                 <div className="flex justify-between items-start mb-4">
                                                     <h2 className="text-lg font-semibold line-clamp-2">{post.title}</h2>
-                                                        <span
-                                                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                                                    {post.role}
+                                                    <span
+                                                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                                    {post.role || "TALENT"}
                                                 </span>
                                                 </div>
 
@@ -231,7 +246,7 @@ const PostsPage = () => {
                                                         <Avatar className="h-6 w-6">
                                                             <AvatarImage src={post.author?.avatar}/>
                                                             <AvatarFallback>
-                                                                {post?.name?.charAt(0) + post?.name?.charAt(1)|| 'A'}
+                                                                {post?.name?.charAt(0) + post?.name?.charAt(1) || 'A'}
                                                             </AvatarFallback>
                                                         </Avatar>
                                                         <span>{post?.name || 'Anonymous'}</span>
@@ -241,7 +256,7 @@ const PostsPage = () => {
 
                                                 {post.tags && post.tags.length > 0 && (
                                                     <div className="flex flex-wrap gap-2 mt-4">
-                                                        {post.tags.map((tag) => (
+                                                        {post.tags.map((tag: boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Key) => (
                                                             <span
                                                                 key={tag}
                                                                 className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-secondary text-secondary-foreground"
@@ -257,17 +272,16 @@ const PostsPage = () => {
                                                     <Button
                                                         variant="ghost"
                                                         className="flex items-center gap-2 text-sm w-full justify-start"
-                                                        onClick={() => toggleComments(post.id)}
+                                                        onClick={() => toggleComments(post.postId)}
                                                     >
                                                         <MessageSquare className="h-4 w-4"/>
-                                                        {comments[post.id]?.length || 0} comments
+                                                        {comments[post.postId]?.length || 0} comments
                                                     </Button>
 
-                                                    {activeCommentPost === post.id && (
+                                                    {activeCommentPost === post.postId && (
                                                         <div className="mt-4 space-y-4">
-                                                            {/* Existing Comments */}
                                                             <div className="space-y-3 max-h-60 overflow-y-auto">
-                                                                {comments[post.id]?.map((comment, index) => (
+                                                                {comments[post.postId]?.map((comment, index) => (
                                                                     <div key={index} className="flex gap-3">
                                                                         <Avatar className="h-8 w-8">
                                                                             <AvatarFallback>
@@ -284,7 +298,7 @@ const PostsPage = () => {
                                                                     </div>
                                                                 ))}
 
-                                                                {(!comments[post.id] || comments[post.id].length === 0) && (
+                                                                {(!comments[post.postId] || comments[post.postId].length === 0) && (
                                                                     <p className="text-sm text-gray-500 text-center py-4">
                                                                         No comments yet. Be the first to comment!
                                                                     </p>
@@ -299,13 +313,13 @@ const PostsPage = () => {
                                                                     onChange={(e) => setCommentText(e.target.value)}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === 'Enter' && commentText.trim()) {
-                                                                            handleAddComment(post.id);
+                                                                            handleAddComment(post.postId);
                                                                         }
                                                                     }}
                                                                 />
                                                                 <Button
                                                                     size="icon"
-                                                                    onClick={() => handleAddComment(post.id)}
+                                                                    onClick={() => handleAddComment(post.postId)}
                                                                     disabled={!commentText.trim()}
                                                                 >
                                                                     <Send className="h-4 w-4"/>

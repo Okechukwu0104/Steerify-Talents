@@ -18,11 +18,15 @@ const Login = () => {
   const [loginType, setLoginType] = useState<"talent" | "client" | null>(null);
 
   if (loginType === "talent") {
+    localStorage.setItem('userRole', 'talent');
     return <TalentLogin onBack={() => setLoginType(null)} />;
+
   }
 
   if (loginType === "client") {
+    localStorage.setItem('userRole', 'client');
     return <ClientLogin onBack={() => setLoginType(null)} />;
+
   }
 
   return (

@@ -27,7 +27,7 @@ public class JobServiceImpl implements JobServices {
     private final ClientRepository clientRepository;
 
 
-    public Job createJob(JobDto jobDto) {
+    public Job createJob(UUID clientId, JobDto jobDto) {
         if (jobDto.getDeadline() == null) {
             throw new IllegalArgumentException("Deadline cannot be null");
         }
@@ -35,8 +35,9 @@ public class JobServiceImpl implements JobServices {
         if (jobDto.getDeadline().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Deadline cannot be in the past");
         }
-        Client client = clientRepository.findById(jobDto.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(()-> new JobNotFoundException("Client not found"));
+        jobDto.setClientName(client.getCompanyName());
         return jobRepository.save(JobMapper.mapDtoToJob(jobDto));
 
     }

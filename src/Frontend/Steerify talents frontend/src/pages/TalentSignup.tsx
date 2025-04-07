@@ -338,7 +338,7 @@ const TalentSignup = () => {
                     className="w-full"
                     disabled={isLoading || skillsList.length === 0}
                   >
-                    {isLoading ? "Creating Profile..." : "Create Talent Profile"}
+                    {isLoading ? "Creating TalentSettingsPage..." : "Create Talent TalentSettingsPage"}
                   </Button>
                 </form>
               </Form>

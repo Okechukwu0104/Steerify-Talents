@@ -45,11 +45,12 @@ const ClientLogin = ({onBack}: ClientLoginProps) => {
     const onSubmit = async (data: LoginRequestDto) => {
         try {
             const result = await loginClient(data).unwrap();
+            localStorage.setItem("userId",result.userId)
             dispatch(setCredentials(result));
 
             toast({
                 title: "Login Successful",
-                description: `Welcome back, ${result.name}!`,
+                description: `Welcome back, ${result.name || result.firstName}!`,
             });
 
           navigate("/dashboard", {state: {talent: result}});

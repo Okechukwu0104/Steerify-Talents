@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JobServices {
-     Job createJob(JobDto jobDto) ;
+     Job createJob(UUID clientId, JobDto jobDto) ;
      List<Job> getAllJobs();
      Job getJobById(UUID jobId);
      List<Job> getJobsByClientId(UUID clientId);

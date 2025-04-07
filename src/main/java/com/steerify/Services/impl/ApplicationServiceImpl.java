@@ -41,6 +41,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (applicationRepository.existsByTalentIdAndJobId(applicationDto.getTalentId(), applicationDto.getJobId())) {
             throw new DuplicateEntityException("You have already applied to this job");
         }
+    applicationDto.setCompanyName(job.getClientName());
+        applicationDto.setJobTitle(job.getTitle());
         Application savedApplication = applicationRepository.save(ApplicationMapper.mapToAppl(applicationDto));
         return ApplicationMapper.mapToApplDto(savedApplication);
     }

@@ -59,7 +59,7 @@ const TalentLogin = ({onBack}: TalentLoginProps) => {
                 description: `Welcome back, ${result.firstName}!`,
             });
 
-            navigate("/dashboard", {state: {talent: result}}); // Redirect to home or dashboard
+            navigate("/dashboard", {state: {talent: result}});
         } catch (error) {
             console.error("Failed to login:", error);
             toast({

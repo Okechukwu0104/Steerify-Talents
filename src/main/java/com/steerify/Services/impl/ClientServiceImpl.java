@@ -67,7 +67,6 @@ public class ClientServiceImpl implements ClientService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public ClientDto updateClient(UUID clientId, ClientDto clientDto) {
         Client existingClient = clientRepository.findById(clientId)
